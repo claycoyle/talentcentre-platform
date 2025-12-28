@@ -170,7 +170,7 @@
             
             // Draw assessments for each person
             Object.entries(groupedData).forEach(([name, assessments]) => {
-                // Draw last 5 self assessments with fading opacity
+                // Draw last 5 self assessments (purple) with fading opacity
                 const selfAssessments = assessments.self.slice(-5);
                 selfAssessments.forEach((point, idx) => {
                     const x = padding + ((point.skill - 1) / 4) * (width - 2 * padding);
@@ -180,8 +180,8 @@
                     // Opacity: oldest (0) = 0.2, newest (4) = 1.0
                     const opacity = 0.2 + (idx / (selfAssessments.length - 1 || 1)) * 0.8;
                     
-                    circles += `<circle cx="${x}" cy="${y}" r="8" fill="${quad.color}" opacity="${opacity}" 
-                                stroke="#3b82f6" stroke-width="2">
+                    circles += `<circle cx="${x}" cy="${y}" r="8" fill="#9333ea" opacity="${opacity}" 
+                                stroke="#9333ea" stroke-width="2">
                         <title>${point.name || ''} - Self Assessment
 Date: ${point.date}
 Skill: ${point.skill.toFixed(1)} | Will: ${point.will.toFixed(1)}
@@ -189,7 +189,7 @@ ${quad.name}</title>
                     </circle>`;
                 });
                 
-                // Draw last 5 manager assessments with fading opacity
+                // Draw last 5 manager assessments (blue) with fading opacity
                 const managerAssessments = assessments.manager.slice(-5);
                 managerAssessments.forEach((point, idx) => {
                     const x = padding + ((point.skill - 1) / 4) * (width - 2 * padding);
@@ -199,8 +199,8 @@ ${quad.name}</title>
                     // Opacity: oldest (0) = 0.2, newest (4) = 1.0
                     const opacity = 0.2 + (idx / (managerAssessments.length - 1 || 1)) * 0.8;
                     
-                    circles += `<circle cx="${x}" cy="${y}" r="8" fill="${quad.color}" opacity="${opacity}" 
-                                stroke="#dc2626" stroke-width="3">
+                    circles += `<circle cx="${x}" cy="${y}" r="8" fill="#2563eb" opacity="${opacity}" 
+                                stroke="#2563eb" stroke-width="2">
                         <title>${point.name || ''} - Manager Assessment
 Date: ${point.date}
 Skill: ${point.skill.toFixed(1)} | Will: ${point.will.toFixed(1)}
@@ -641,7 +641,7 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.12</span>
+                            <span class="text-sm text-gray">v0.13</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
