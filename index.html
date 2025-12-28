@@ -97,6 +97,7 @@
         let state = {
             view: 'manager',
             selectedRep: null,
+            showingManageReps: false,
             editingPlan: false,
             editingSession: false,
             editingMatrix: false,
@@ -184,6 +185,33 @@
                     <text x="${padding - 20}" y="${height - padding}" font-size="12">1</text>
                     <text x="${padding - 20}" y="${padding}" font-size="12">5</text>
                 </svg>
+            `;
+        }
+
+        function renderManageReps() {
+            const repsListHTML = state.reps.map(rep => `
+                <div class="rep-card" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 class="font-semibold" style="font-size: 1.125rem;">${rep.name}</h4>
+                        <p class="text-sm text-gray">${rep.sessions.length} sessions, ${rep.notes ? rep.notes.length : 0} notes</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="renameRep(${rep.id})" class="btn btn-secondary btn-small">Rename</button>
+                        <button onclick="deleteRep(${rep.id})" class="btn btn-danger btn-small">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="card">
+                    <div class="flex flex-between mb-4">
+                        <h3 class="subtitle" style="margin: 0;">Manage Team Members</h3>
+                        <button onclick="addNewRep()" class="btn btn-success">+ Add Rep</button>
+                    </div>
+                    <div class="grid grid-2">
+                        ${repsListHTML}
+                    </div>
+                </div>
             `;
         }
 
@@ -558,7 +586,7 @@
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.08</span>
+                            <span class="text-sm text-gray">v0.10</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
@@ -567,12 +595,19 @@
                             <button onclick="switchView('rep')" class="btn ${state.view === 'rep' ? 'btn-primary' : 'btn-secondary'}">
                                 Rep View
                             </button>
+                            ${state.view === 'manager' ? `
+                                <button onclick="showManageReps()" class="btn btn-secondary">
+                                    Manage Reps
+                                </button>
+                            ` : ''}
                         </div>
                         ${repSelectHTML}
                     </div>
 
                     ${state.view === 'manager' && !state.selectedRep 
-                        ? renderTeamOverview() 
+                        ? state.showingManageReps
+                            ? renderManageReps()
+                            : renderTeamOverview()
                         : state.selectedRep 
                             ? renderRepDetail(state.selectedRep)
                             : ''}
@@ -584,12 +619,60 @@
         function switchView(view) {
             state.view = view;
             state.selectedRep = view === 'rep' ? state.reps[0] : null;
+            state.showingManageReps = false;
             state.editingPlan = false;
             state.editingSession = false;
             state.editingMatrix = false;
             state.editingNote = false;
             state.editingRepResponse = null;
             render();
+        }
+
+        function showManageReps() {
+            state.showingManageReps = true;
+            state.selectedRep = null;
+            render();
+        }
+
+        function addNewRep() {
+            const name = prompt('Enter the new rep\'s name:');
+            if (!name || !name.trim()) return;
+
+            const newRep = {
+                id: Date.now(),
+                name: name.trim(),
+                devPlan: 'New development plan - to be updated',
+                sessions: [],
+                matrixHistory: [],
+                notes: [],
+                actionItems: []
+            };
+
+            state.reps = [...state.reps, newRep];
+            saveData();
+        }
+
+        function deleteRep(repId) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            if (!confirm(`Are you sure you want to delete ${rep.name}? This will permanently delete all their data including sessions, notes, and assessments.`)) return;
+
+            state.reps = state.reps.filter(r => r.id !== repId);
+            saveData();
+        }
+
+        function renameRep(repId) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            const newName = prompt(`Enter new name for ${rep.name}:`, rep.name);
+            if (!newName || !newName.trim() || newName.trim() === rep.name) return;
+
+            state.reps = state.reps.map(r => 
+                r.id === repId ? { ...r, name: newName.trim() } : r
+            );
+            saveData();
         }
 
         function selectRep(id) {
