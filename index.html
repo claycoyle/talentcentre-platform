@@ -525,7 +525,10 @@
             root.innerHTML = `
                 <div class="container">
                     <div class="card">
-                        <h1 class="title">Sales Team Development Platform</h1>
+                        <div class="flex flex-between" style="align-items: baseline;">
+                            <h1 class="title">Sales Team Development Platform</h1>
+                            <span class="text-sm text-gray">v0.02</span>
+                        </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
                                 Manager View
