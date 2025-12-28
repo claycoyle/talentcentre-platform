@@ -130,9 +130,9 @@
             render();
         }
 
-        async function saveData() {
+        function saveData() {
             try {
-                await storage.set('sales-dev-data', JSON.stringify({ reps: state.reps }));
+                storage.set('sales-dev-data', JSON.stringify({ reps: state.reps }));
             } catch (error) {
                 console.error('Error saving:', error);
             }
@@ -708,7 +708,7 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.16</span>
+                            <span class="text-sm text-gray">v0.17</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
@@ -928,7 +928,8 @@ ${quad.name}</title>
             render();
         }
 
-        async function saveNote(repId) {
+        function saveNote(repId) {
+            console.log('saveNote called for rep:', repId);
             const content = document.getElementById('noteContent').value;
             if (!content.trim()) {
                 alert('Please enter a note');
@@ -951,10 +952,13 @@ ${quad.name}</title>
                 return r;
             });
 
+            console.log('State updated, notes:', state.reps.find(r => r.id === repId).notes);
             state.editingNote = false;
             state.newNote = { content: '' };
-            await saveData();
+            saveData();
+            console.log('About to render');
             render();
+            console.log('Render complete');
         }
 
         function editRepResponse(sessionId) {
@@ -1028,7 +1032,8 @@ ${quad.name}</title>
             }
         }
 
-        async function toggleActionItem(repId, itemId) {
+        function toggleActionItem(repId, itemId) {
+            console.log('toggleActionItem called');
             state.reps = state.reps.map(r => {
                 if (r.id === repId) {
                     return {
@@ -1040,8 +1045,10 @@ ${quad.name}</title>
                 }
                 return r;
             });
-            await saveData();
+            saveData();
+            console.log('About to render after toggle');
             render();
+            console.log('Render complete after toggle');
         }
 
         function deleteSession(repId, sessionId) {
