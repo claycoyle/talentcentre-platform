@@ -708,7 +708,7 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.15</span>
+                            <span class="text-sm text-gray">v0.16</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
@@ -928,7 +928,7 @@ ${quad.name}</title>
             render();
         }
 
-        function saveNote(repId) {
+        async function saveNote(repId) {
             const content = document.getElementById('noteContent').value;
             if (!content.trim()) {
                 alert('Please enter a note');
@@ -953,7 +953,7 @@ ${quad.name}</title>
 
             state.editingNote = false;
             state.newNote = { content: '' };
-            saveData();
+            await saveData();
             render();
         }
 
@@ -1028,7 +1028,7 @@ ${quad.name}</title>
             }
         }
 
-        function toggleActionItem(repId, itemId) {
+        async function toggleActionItem(repId, itemId) {
             state.reps = state.reps.map(r => {
                 if (r.id === repId) {
                     return {
@@ -1040,7 +1040,7 @@ ${quad.name}</title>
                 }
                 return r;
             });
-            saveData();
+            await saveData();
             render();
         }
 
