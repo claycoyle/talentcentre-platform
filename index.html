@@ -380,14 +380,12 @@
                 <div class="card">
                     <div class="flex flex-between mb-4">
                         <h3 class="subtitle" style="margin: 0;">Notes & Reflections</h3>
-                        ${state.view === 'rep' ? `
-                            <button onclick="toggleEditNote()" class="btn btn-primary">
-                                ${state.editingNote ? 'Cancel' : '+ Add Note'}
-                            </button>
-                        ` : ''}
+                        <button onclick="toggleEditNote()" class="btn btn-primary">
+                            ${state.editingNote ? 'Cancel' : '+ Add Note'}
+                        </button>
                     </div>
 
-                    ${state.editingNote && state.view === 'rep' ? `
+                    ${state.editingNote ? `
                         <div class="form-section">
                             <textarea id="noteContent" rows="4" placeholder="Share your thoughts, reflections, or updates...">${state.newNote.content}</textarea>
                             <button onclick="saveNote(${rep.id})" class="btn btn-success mt-2">Save Note</button>
