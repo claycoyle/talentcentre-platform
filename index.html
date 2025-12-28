@@ -318,8 +318,7 @@
             const actionItemsHTML = rep.actionItems && rep.actionItems.length > 0 ? rep.actionItems.map(item => `
                 <div class="action-item ${item.completed ? 'completed' : ''}">
                     <input type="checkbox" ${item.completed ? 'checked' : ''} 
-                           onchange="toggleActionItem(${rep.id}, ${item.id})"
-                           ${state.view === 'rep' ? '' : 'disabled'}>
+                           onchange="toggleActionItem(${rep.id}, ${item.id})">
                     <div style="flex: 1;">
                         <p class="text-sm ${item.completed ? 'text-gray' : ''}" style="${item.completed ? 'text-decoration: line-through;' : ''}">${item.text}</p>
                         ${item.dueDate ? `<p class="text-sm text-gray">Due: ${item.dueDate}</p>` : ''}
@@ -543,7 +542,7 @@
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.06</span>
+                            <span class="text-sm text-gray">v0.07</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
