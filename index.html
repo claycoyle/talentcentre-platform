@@ -708,7 +708,7 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.17</span>
+                            <span class="text-sm text-gray">v0.18</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
@@ -952,6 +952,11 @@ ${quad.name}</title>
                 return r;
             });
 
+            // Update selectedRep to point to the new object
+            if (state.selectedRep && state.selectedRep.id === repId) {
+                state.selectedRep = state.reps.find(r => r.id === repId);
+            }
+
             console.log('State updated, notes:', state.reps.find(r => r.id === repId).notes);
             state.editingNote = false;
             state.newNote = { content: '' };
@@ -1045,6 +1050,12 @@ ${quad.name}</title>
                 }
                 return r;
             });
+            
+            // Update selectedRep to point to the new object
+            if (state.selectedRep && state.selectedRep.id === repId) {
+                state.selectedRep = state.reps.find(r => r.id === repId);
+            }
+            
             saveData();
             console.log('About to render after toggle');
             render();
