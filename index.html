@@ -97,7 +97,7 @@
             editingMatrix: false,
             editingNote: false,
             editingRepResponse: null,
-            newSession: { date: '', focus: '', outcomes: '', actionItems: '', repResponse: '' },
+            newSession: { date: '', focus: '', outcomes: '', actionItems: '' },
             newNote: { content: '' },
             matrixInput: { role: 'manager', skill1: 3, skill2: 3, skill3: 3, will1: 3, will2: 3, will3: 3 },
             reps: [
@@ -270,15 +270,24 @@
                                 <p class="text-sm text-gray">${session.actionItems}</p>
                             </div>
                         ` : ''}
-                        ${session.repResponse ? `
-                            <div class="rep-response">
-                                <p class="text-sm font-semibold mb-1">Rep Response:</p>
-                                <p class="text-sm">${session.repResponse}</p>
+                        ${session.repResponses && session.repResponses.length > 0 ? `
+                            <div class="mb-2">
+                                <p class="text-sm font-semibold mb-2">Rep Responses:</p>
+                                ${session.repResponses.map(response => `
+                                    <div class="rep-response mb-2">
+                                        <div class="flex flex-between mb-1">
+                                            <span class="text-sm font-semibold">${response.author}</span>
+                                            <span class="text-sm text-gray">${response.date}</span>
+                                        </div>
+                                        <p class="text-sm">${response.content}</p>
+                                    </div>
+                                `).join('')}
                             </div>
-                        ` : state.view === 'rep' ? `
+                        ` : ''}
+                        ${state.view === 'rep' ? `
                             ${state.editingRepResponse === session.id ? `
                                 <div class="mt-2">
-                                    <textarea id="repResponseEdit" rows="3" placeholder="Add your response to this session...">${session.repResponse || ''}</textarea>
+                                    <textarea id="repResponseEdit" rows="3" placeholder="Add your response to this session..."></textarea>
                                     <div class="flex gap-2 mt-2">
                                         <button onclick="saveRepResponse(${rep.id}, ${session.id})" class="btn btn-success btn-small">Save Response</button>
                                         <button onclick="cancelRepResponse()" class="btn btn-secondary btn-small">Cancel</button>
@@ -525,7 +534,7 @@
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.03</span>
+                            <span class="text-sm text-gray">v0.04</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
@@ -589,7 +598,7 @@
         function toggleEditSession() {
             state.editingSession = !state.editingSession;
             if (!state.editingSession) {
-                state.newSession = { date: '', focus: '', outcomes: '', actionItems: '', repResponse: '' };
+                state.newSession = { date: '', focus: '', outcomes: '', actionItems: '' };
             }
             render();
         }
@@ -609,14 +618,14 @@
                 if (r.id === repId) {
                     return {
                         ...r,
-                        sessions: [...r.sessions, { id: Date.now(), date, focus, outcomes, actionItems, repResponse: '' }]
+                        sessions: [...r.sessions, { id: Date.now(), date, focus, outcomes, actionItems, repResponses: [] }]
                     };
                 }
                 return r;
             });
 
             state.editingSession = false;
-            state.newSession = { date: '', focus: '', outcomes: '', actionItems: '', repResponse: '' };
+            state.newSession = { date: '', focus: '', outcomes: '', actionItems: '' };
             saveData();
         }
 
@@ -725,9 +734,21 @@
                 if (r.id === repId) {
                     return {
                         ...r,
-                        sessions: r.sessions.map(s => 
-                            s.id === sessionId ? { ...s, repResponse: response } : s
-                        )
+                        sessions: r.sessions.map(s => {
+                            if (s.id === sessionId) {
+                                const repResponses = s.repResponses || [];
+                                return {
+                                    ...s,
+                                    repResponses: [...repResponses, {
+                                        id: Date.now(),
+                                        date: new Date().toISOString().split('T')[0],
+                                        content: response,
+                                        author: 'Rep'
+                                    }]
+                                };
+                            }
+                            return s;
+                        })
                     };
                 }
                 return r;
