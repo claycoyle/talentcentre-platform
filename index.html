@@ -407,14 +407,12 @@
                 <div class="card">
                     <div class="flex flex-between mb-4">
                         <h3 class="subtitle" style="margin: 0;">Coaching Sessions (${rep.sessions.length})</h3>
-                        ${state.view === 'manager' ? `
-                            <button onclick="toggleEditSession()" class="btn btn-primary">
-                                ${state.editingSession ? 'Cancel' : '+ Add Session'}
-                            </button>
-                        ` : ''}
+                        <button onclick="toggleEditSession()" class="btn btn-primary">
+                            ${state.editingSession ? 'Cancel' : '+ Add Session'}
+                        </button>
                     </div>
 
-                    ${state.editingSession && state.view === 'manager' ? `
+                    ${state.editingSession ? `
                         <div class="form-section">
                             <div class="grid grid-cols-2 gap-4 mb-3">
                                 <div>
@@ -534,7 +532,7 @@
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.04</span>
+                            <span class="text-sm text-gray">v0.05</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
