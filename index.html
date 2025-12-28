@@ -136,7 +136,6 @@
             } catch (error) {
                 console.error('Error saving:', error);
             }
-            render();
         }
 
         function getQuadrant(skill, will) {
@@ -709,7 +708,7 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.14</span>
+                            <span class="text-sm text-gray">v0.15</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
@@ -773,6 +772,7 @@ ${quad.name}</title>
 
             state.reps = [...state.reps, newRep];
             saveData();
+            render();
         }
 
         function deleteRep(repId) {
@@ -783,6 +783,7 @@ ${quad.name}</title>
 
             state.reps = state.reps.filter(r => r.id !== repId);
             saveData();
+            render();
         }
 
         function renameRep(repId) {
@@ -796,6 +797,7 @@ ${quad.name}</title>
                 r.id === repId ? { ...r, name: newName.trim() } : r
             );
             saveData();
+            render();
         }
 
         function selectRep(id) {
@@ -823,6 +825,7 @@ ${quad.name}</title>
             state.reps = state.reps.map(r => r.id === repId ? { ...r, devPlan: newPlan } : r);
             state.editingPlan = false;
             saveData();
+            render();
         }
 
         function toggleEditSession() {
@@ -865,6 +868,7 @@ ${quad.name}</title>
             state.editingSession = false;
             state.newSession = { date: '', focus: '', outcomes: '', actionItems: '' };
             saveData();
+            render();
         }
 
         function toggleEditMatrix() {
@@ -913,6 +917,7 @@ ${quad.name}</title>
             state.editingMatrix = false;
             state.matrixInput = { role: 'manager', skill1: 3, skill2: 3, skill3: 3, will1: 3, will2: 3, will3: 3 };
             saveData();
+            render();
         }
 
         function toggleEditNote() {
@@ -949,6 +954,7 @@ ${quad.name}</title>
             state.editingNote = false;
             state.newNote = { content: '' };
             saveData();
+            render();
         }
 
         function editRepResponse(sessionId) {
@@ -994,6 +1000,7 @@ ${quad.name}</title>
 
             state.editingRepResponse = null;
             saveData();
+            render();
         }
 
         function addActionItem(repId) {
@@ -1017,6 +1024,7 @@ ${quad.name}</title>
                     return r;
                 });
                 saveData();
+                render();
             }
         }
 
@@ -1033,6 +1041,7 @@ ${quad.name}</title>
                 return r;
             });
             saveData();
+            render();
         }
 
         function deleteSession(repId, sessionId) {
@@ -1048,6 +1057,7 @@ ${quad.name}</title>
                 return r;
             });
             saveData();
+            render();
         }
 
         function deleteNote(repId, noteId) {
@@ -1063,6 +1073,7 @@ ${quad.name}</title>
                 return r;
             });
             saveData();
+            render();
         }
 
         function deleteResponse(repId, sessionId, responseId) {
@@ -1086,6 +1097,7 @@ ${quad.name}</title>
                 return r;
             });
             saveData();
+            render();
         }
 
         function deleteActionItem(repId, itemId) {
@@ -1101,6 +1113,7 @@ ${quad.name}</title>
                 return r;
             });
             saveData();
+            render();
         }
 
         console.log('Calling loadData...');
