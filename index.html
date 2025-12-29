@@ -42,6 +42,7 @@
         .mb-3 { margin-bottom: 0.75rem; }
         .mb-4 { margin-bottom: 1rem; }
         .mt-4 { margin-top: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
         .p-3 { padding: 0.75rem; }
         .p-4 { padding: 1rem; }
         .text-sm { font-size: 0.875rem; }
@@ -111,29 +112,46 @@
             matrixInput: { role: 'manager', skill1: 3, skill2: 3, skill3: 3, will1: 3, will2: 3, will3: 3 },
             currentUser: null,
             reps: [
-                { id: 1, name: 'Sarah Johnson', devPlan: 'Focus on consultative selling and objection handling', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
-                { id: 2, name: 'Mike Chen', devPlan: 'Develop closing techniques and pipeline management', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
-                { id: 3, name: 'Alex Rodriguez', devPlan: 'Improve discovery questions and needs analysis', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
-                { id: 4, name: 'Emily Davis', devPlan: 'Build product expertise and technical knowledge', sessions: [], matrixHistory: [], notes: [], actionItems: [] }
+                { id: 1, name: 'Sarah Johnson', managerId: null, devPlan: 'Focus on consultative selling and objection handling', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
+                { id: 2, name: 'Mike Chen', managerId: null, devPlan: 'Develop closing techniques and pipeline management', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
+                { id: 3, name: 'Alex Rodriguez', managerId: null, devPlan: 'Improve discovery questions and needs analysis', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
+                { id: 4, name: 'Emily Davis', managerId: null, devPlan: 'Build product expertise and technical knowledge', sessions: [], matrixHistory: [], notes: [], actionItems: [] }
+            ],
+            managers: [
+                { id: 1, name: 'Main Manager' }
             ]
         };
 
-        // User credentials - CHANGE THESE!
-        const users = {
-            'manager': { password: 'manager123', role: 'manager', repId: null },
-            'sarah': { password: 'sarah123', role: 'rep', repId: 1 },
-            'mike': { password: 'mike123', role: 'rep', repId: 2 },
-            'alex': { password: 'alex123', role: 'rep', repId: 3 },
-            'emily': { password: 'emily123', role: 'rep', repId: 4 }
+        let users = {
+            'manager': { password: 'manager123', role: 'manager', managerId: 1 }
         };
 
+        function loadUsers() {
+            try {
+                const savedUsers = localStorage.getItem('system-users');
+                if (savedUsers) {
+                    users = JSON.parse(savedUsers);
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function saveUsers() {
+            try {
+                localStorage.setItem('system-users', JSON.stringify(users));
+            } catch (error) {
+                console.error('Error saving users:', error);
+            }
+        }
+
         async function loadData() {
-            // Check for existing session
+            loadUsers();
+            
             const sessionUser = localStorage.getItem('currentUser');
             if (sessionUser) {
                 state.currentUser = JSON.parse(sessionUser);
                 
-                // Set appropriate view based on role
                 if (state.currentUser.role === 'rep') {
                     state.view = 'rep';
                     state.selectedRep = state.reps.find(r => r.id === state.currentUser.repId);
@@ -145,8 +163,8 @@
                 if (result?.value) {
                     const data = JSON.parse(result.value);
                     state.reps = data.reps || state.reps;
+                    state.managers = data.managers || state.managers;
                     
-                    // Update selectedRep reference if logged in as rep
                     if (state.currentUser?.role === 'rep') {
                         state.selectedRep = state.reps.find(r => r.id === state.currentUser.repId);
                     }
@@ -159,7 +177,7 @@
 
         function saveData() {
             try {
-                storage.set('sales-dev-data', JSON.stringify({ reps: state.reps }));
+                storage.set('sales-dev-data', JSON.stringify({ reps: state.reps, managers: state.managers }));
             } catch (error) {
                 console.error('Error saving:', error);
             }
@@ -303,7 +321,7 @@ ${quad.name}</title>
                                 border-radius: 50%; opacity: ${assess.opacity};"></div>
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            ${assess.name ? `<span class="text-sm font-semibold">${assess.name}</span>` : '<span class="text-sm font-semibold">' + (assess.role === 'self' ? 'Self' : 'Manager') + ' Assessment</span>'}
+                            <span class="text-sm font-semibold">${assess.name || (assess.role === 'self' ? 'Self' : 'Manager') + ' Assessment'}</span>
                             <span class="text-sm text-gray">${assess.date}</span>
                         </div>
                         <div style="display: flex; gap: 1rem; font-size: 0.75rem; color: #6b7280;">
@@ -329,23 +347,110 @@ ${quad.name}</title>
         }
 
         function renderManageReps() {
-            const repsListHTML = state.reps.map(rep => `
-                <div class="rep-card" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h4 class="font-semibold" style="font-size: 1.125rem;">${rep.name}</h4>
-                        <p class="text-sm text-gray">${rep.sessions.length} sessions, ${rep.notes ? rep.notes.length : 0} notes</p>
+            const managersListHTML = state.managers.map(manager => {
+                const teamSize = state.reps.filter(r => r.managerId === manager.id).length;
+                const managerUsername = Object.keys(users).find(username => 
+                    users[username].role === 'manager' && users[username].managerId === manager.id
+                );
+                
+                return `
+                    <div class="rep-card" style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div>
+                                <h4 class="font-semibold" style="font-size: 1.125rem;">👤 ${manager.name}</h4>
+                                <p class="text-sm text-gray">${teamSize} team members</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="renameManager(${manager.id})" class="btn btn-secondary btn-small">Rename</button>
+                                ${manager.id !== 1 ? `
+                                    <button onclick="deleteManager(${manager.id})" class="btn btn-danger btn-small">Delete</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        ${managerUsername ? `
+                            <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.375rem; padding: 0.75rem;">
+                                <p class="text-sm"><strong>Username:</strong> ${managerUsername}</p>
+                                <p class="text-sm"><strong>Password:</strong> ${users[managerUsername].password}</p>
+                                <button onclick="updateManagerCredentials(${manager.id}, '${managerUsername}')" class="btn btn-secondary btn-small mt-2">Edit Credentials</button>
+                            </div>
+                        ` : `
+                            <button onclick="createManagerLogin(${manager.id})" class="btn btn-success btn-small">Create Login</button>
+                        `}
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="renameRep(${rep.id})" class="btn btn-secondary btn-small">Rename</button>
-                        <button onclick="deleteRep(${rep.id})" class="btn btn-danger btn-small">Delete</button>
+                `;
+            }).join('');
+
+            const repsListHTML = state.reps.map(rep => {
+                const repUsername = Object.keys(users).find(username => 
+                    users[username].role === 'rep' && users[username].repId === rep.id
+                );
+                const hasLogin = !!repUsername;
+                const manager = state.managers.find(m => m.id === rep.managerId);
+                
+                return `
+                    <div class="rep-card" style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div>
+                                <h4 class="font-semibold" style="font-size: 1.125rem;">${rep.name}</h4>
+                                <p class="text-sm text-gray">${rep.sessions.length} sessions, ${rep.notes ? rep.notes.length : 0} notes</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="renameRep(${rep.id})" class="btn btn-secondary btn-small">Rename</button>
+                                <button onclick="deleteRep(${rep.id})" class="btn btn-danger btn-small">Delete</button>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem;">
+                            <div class="mb-2">
+                                <p class="text-sm font-semibold">Reports To</p>
+                            </div>
+                            <select id="manager-${rep.id}" class="text-sm" style="padding: 0.375rem;">
+                                <option value="">No Manager Assigned</option>
+                                ${state.managers.map(m => `
+                                    <option value="${m.id}" ${rep.managerId === m.id ? 'selected' : ''}>${m.name}</option>
+                                `).join('')}
+                            </select>
+                            <button onclick="updateRepManager(${rep.id})" class="btn btn-primary btn-small mt-2">Update Manager</button>
+                        </div>
+                        
+                        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.375rem; padding: 1rem;">
+                            <div class="flex flex-between mb-2">
+                                <p class="text-sm font-semibold">Login Credentials</p>
+                                ${hasLogin ? `
+                                    <button onclick="removeLogin(${rep.id})" class="btn btn-danger btn-small" style="padding: 0.125rem 0.5rem;">Remove</button>
+                                ` : ''}
+                            </div>
+                            ${hasLogin ? `
+                                <div class="mb-2">
+                                    <label class="text-sm">Username</label>
+                                    <input type="text" id="username-${rep.id}" value="${repUsername}" class="text-sm" style="padding: 0.375rem;">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="text-sm">Password</label>
+                                    <input type="text" id="password-${rep.id}" value="${users[repUsername].password}" class="text-sm" style="padding: 0.375rem;">
+                                </div>
+                                <button onclick="updateLogin(${rep.id}, '${repUsername}')" class="btn btn-primary btn-small">Update</button>
+                            ` : `
+                                <button onclick="createLogin(${rep.id})" class="btn btn-success btn-small">Create Login</button>
+                            `}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             return `
                 <div class="card">
                     <div class="flex flex-between mb-4">
-                        <h3 class="subtitle" style="margin: 0;">Manage Team Members</h3>
+                        <h3 class="subtitle" style="margin: 0;">Managers</h3>
+                        <button onclick="addNewManager()" class="btn btn-success">+ Add Manager</button>
+                    </div>
+                    <div class="grid grid-2">
+                        ${managersListHTML}
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="flex flex-between mb-4">
+                        <h3 class="subtitle" style="margin: 0;">Sales Reps</h3>
                         <button onclick="addNewRep()" class="btn btn-success">+ Add Rep</button>
                     </div>
                     <div class="grid grid-2">
@@ -356,9 +461,15 @@ ${quad.name}</title>
         }
 
         function renderTeamOverview() {
-            const repsHTML = state.reps.map(rep => {
+            const currentManagerId = state.currentUser?.managerId;
+            const filteredReps = currentManagerId 
+                ? state.reps.filter(r => r.managerId === currentManagerId)
+                : state.reps;
+
+            const repsHTML = filteredReps.map(rep => {
                 const latest = rep.matrixHistory[rep.matrixHistory.length - 1];
                 const quad = latest ? getQuadrant(latest.skill, latest.will) : null;
+                const manager = state.managers.find(m => m.id === rep.managerId);
                 
                 return `
                     <div class="rep-card" onclick="selectRep(${rep.id})">
@@ -366,6 +477,7 @@ ${quad.name}</title>
                             <div>
                                 <h4 class="font-semibold" style="font-size: 1.125rem;">${rep.name}</h4>
                                 <p class="text-sm text-gray">${rep.sessions.length} coaching sessions</p>
+                                ${manager ? `<p class="text-sm text-gray">Reports to: ${manager.name}</p>` : ''}
                             </div>
                             ${quad ? `<span class="badge" style="background-color: ${quad.color}; height: fit-content;">
                                 ${quad.name}
@@ -381,14 +493,14 @@ ${quad.name}</title>
                 `;
             }).join('');
 
-            const allData = state.reps.flatMap(r => {
+            const allData = filteredReps.flatMap(r => {
                 const latest = r.matrixHistory[r.matrixHistory.length - 1];
                 return latest ? [{ ...latest, name: r.name }] : [];
             });
 
             return `
                 <div class="card">
-                    <h3 class="subtitle">Team Skill/Will Matrix</h3>
+                    <h3 class="subtitle">Team Skill/Will Matrix ${currentManagerId ? '(Your Team)' : '(All Reps)'}</h3>
                     ${createMatrixSVG(allData, true)}
                     <div class="mt-4 p-3" style="background-color: #f9fafb; border-radius: 0.375rem; border: 1px solid #e5e7eb;">
                         <p class="text-sm font-semibold mb-2">Assessment Types:</p>
@@ -406,16 +518,15 @@ ${quad.name}</title>
                     </div>
                 </div>
                 <div class="card">
-                    <h3 class="subtitle">Team Overview</h3>
+                    <h3 class="subtitle">Team Overview (${filteredReps.length} reps)</h3>
                     <div class="grid grid-2">
-                        ${repsHTML}
+                        ${repsHTML.length > 0 ? repsHTML : '<p class="empty-state">No reps assigned to your team yet</p>'}
                     </div>
                 </div>
             `;
         }
 
         function renderRepDetail(rep) {
-            const [planEdit, setPlanEdit] = [rep.devPlan, null];
             const latestMatrix = rep.matrixHistory[rep.matrixHistory.length - 1];
             
             const sessionsHTML = rep.sessions.length === 0 
@@ -720,11 +831,39 @@ ${quad.name}</title>
             `;
         }
 
+        function renderLogin() {
+            return `
+                <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f3f4f6;">
+                    <div class="card" style="max-width: 400px; width: 100%;">
+                        <h1 class="title">Sales Team Development Platform</h1>
+                        <p class="text-sm text-gray mb-4">Please log in to continue</p>
+                        
+                        <form onsubmit="handleLogin(event)">
+                            <div class="mb-3">
+                                <label>Username</label>
+                                <input type="text" id="username" required autofocus>
+                            </div>
+                            <div class="mb-4">
+                                <label>Password</label>
+                                <input type="password" id="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                        </form>
+                        
+                        <div class="mt-4 p-3" style="background: #f9fafb; border-radius: 0.375rem; font-size: 0.75rem; color: #6b7280;">
+                            <p class="font-semibold mb-2">Default Login:</p>
+                            <p>Username: manager</p>
+                            <p>Password: manager123</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function render() {
             console.log('Rendering...');
             const root = document.getElementById('root');
             
-            // Show login screen if not logged in
             if (!state.currentUser) {
                 root.innerHTML = renderLogin();
                 return;
@@ -747,7 +886,7 @@ ${quad.name}</title>
                                 <p class="text-sm text-gray">Logged in as: ${state.currentUser.username} (${state.currentUser.role})</p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem;">
-                                <span class="text-sm text-gray">v0.28</span>
+                                <span class="text-sm text-gray">v0.30</span>
                                 <button onclick="logout()" class="btn btn-secondary btn-small">Logout</button>
                             </div>
                         </div>
@@ -761,7 +900,7 @@ ${quad.name}</title>
                                 </button>
                                 ${state.view === 'manager' ? `
                                     <button onclick="showManageReps()" class="btn btn-secondary">
-                                        Manage Reps
+                                        Manage Team
                                     </button>
                                 ` : ''}
                             </div>
@@ -780,79 +919,7 @@ ${quad.name}</title>
             `;
         }
 
-        function renderLogin() {
-            return `
-                <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f3f4f6;">
-                    <div class="card" style="max-width: 400px; width: 100%;">
-                        <h1 class="title">Sales Team Development Platform</h1>
-                        <p class="text-sm text-gray mb-4">Please log in to continue</p>
-                        
-                        <form onsubmit="handleLogin(event)">
-                            <div class="mb-3">
-                                <label>Username</label>
-                                <input type="text" id="username" required autofocus>
-                            </div>
-                            <div class="mb-4">
-                                <label>Password</label>
-                                <input type="password" id="password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-                        </form>
-                        
-                        <div class="mt-4 p-3" style="background: #f9fafb; border-radius: 0.375rem; font-size: 0.75rem; color: #6b7280;">
-                            <p class="font-semibold mb-2">Demo Credentials:</p>
-                            <p>Manager: manager / manager123</p>
-                            <p>Rep (Sarah): sarah / sarah123</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value.toLowerCase();
-            const password = document.getElementById('password').value;
-            
-            const user = users[username];
-            
-            if (!user || user.password !== password) {
-                alert('Invalid username or password');
-                return;
-            }
-            
-            // Set current user
-            state.currentUser = {
-                username: username,
-                role: user.role,
-                repId: user.repId
-            };
-            
-            // Save session
-            localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
-            
-            // Set appropriate view
-            if (user.role === 'rep') {
-                state.view = 'rep';
-                state.selectedRep = state.reps.find(r => r.id === user.repId);
-            } else {
-                state.view = 'manager';
-            }
-            
-            render();
-        }
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            state.currentUser = null;
-            state.view = 'manager';
-            state.selectedRep = null;
-            state.showingManageReps = false;
-            render();
-        }
-
         function switchView(view) {
-            // Only managers can switch views
             if (state.currentUser?.role !== 'manager') return;
             
             state.view = view;
@@ -872,6 +939,46 @@ ${quad.name}</title>
             render();
         }
 
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.toLowerCase();
+            const password = document.getElementById('password').value;
+            
+            const user = users[username];
+            
+            if (!user || user.password !== password) {
+                alert('Invalid username or password');
+                return;
+            }
+            
+            state.currentUser = {
+                username: username,
+                role: user.role,
+                repId: user.repId,
+                managerId: user.managerId
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+            
+            if (user.role === 'rep') {
+                state.view = 'rep';
+                state.selectedRep = state.reps.find(r => r.id === user.repId);
+            } else {
+                state.view = 'manager';
+            }
+            
+            render();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            state.currentUser = null;
+            state.view = 'manager';
+            state.selectedRep = null;
+            state.showingManageReps = false;
+            render();
+        }
+
         function addNewRep() {
             const name = prompt('Enter the new rep\'s name:');
             if (!name || !name.trim()) return;
@@ -879,6 +986,7 @@ ${quad.name}</title>
             const newRep = {
                 id: Date.now(),
                 name: name.trim(),
+                managerId: null,
                 devPlan: 'New development plan - to be updated',
                 sessions: [],
                 matrixHistory: [],
@@ -891,28 +999,130 @@ ${quad.name}</title>
             render();
         }
 
-        function deleteRep(repId) {
-            const rep = state.reps.find(r => r.id === repId);
-            if (!rep) return;
+        function addNewManager() {
+            const name = prompt('Enter the new manager\'s name:');
+            if (!name || !name.trim()) return;
 
-            if (!confirm(`Are you sure you want to delete ${rep.name}? This will permanently delete all their data including sessions, notes, and assessments.`)) return;
+            const newManager = {
+                id: Date.now(),
+                name: name.trim()
+            };
 
-            state.reps = state.reps.filter(r => r.id !== repId);
+            state.managers = [...state.managers, newManager];
             saveData();
             render();
         }
 
-        function renameRep(repId) {
-            const rep = state.reps.find(r => r.id === repId);
-            if (!rep) return;
+        function deleteManager(managerId) {
+            const manager = state.managers.find(m => m.id === managerId);
+            if (!manager) return;
 
-            const newName = prompt(`Enter new name for ${rep.name}:`, rep.name);
-            if (!newName || !newName.trim() || newName.trim() === rep.name) return;
+            const teamSize = state.reps.filter(r => r.managerId === managerId).length;
+            
+            if (teamSize > 0) {
+                if (!confirm(`${manager.name} has ${teamSize} team members. Deleting this manager will unassign these reps. Continue?`)) return;
+                
+                state.reps = state.reps.map(r => 
+                    r.managerId === managerId ? { ...r, managerId: null } : r
+                );
+            }
 
-            state.reps = state.reps.map(r => 
-                r.id === repId ? { ...r, name: newName.trim() } : r
+            const managerUsername = Object.keys(users).find(username => 
+                users[username].role === 'manager' && users[username].managerId === managerId
+            );
+            if (managerUsername) {
+                delete users[managerUsername];
+                saveUsers();
+            }
+
+            state.managers = state.managers.filter(m => m.id !== managerId);
+            saveData();
+            render();
+        }
+
+        function renameManager(managerId) {
+            const manager = state.managers.find(m => m.id === managerId);
+            if (!manager) return;
+
+            const newName = prompt(`Enter new name for ${manager.name}:`, manager.name);
+            if (!newName || !newName.trim() || newName.trim() === manager.name) return;
+
+            state.managers = state.managers.map(m => 
+                m.id === managerId ? { ...m, name: newName.trim() } : m
             );
             saveData();
+            render();
+        }
+
+        function updateRepManager(repId) {
+            const selectElement = document.getElementById(`manager-${repId}`);
+            const managerId = selectElement.value ? parseInt(selectElement.value) : null;
+
+            state.reps = state.reps.map(r => 
+                r.id === repId ? { ...r, managerId: managerId } : r
+            );
+
+            if (state.selectedRep && state.selectedRep.id === repId) {
+                state.selectedRep = state.reps.find(r => r.id === repId);
+            }
+
+            saveData();
+            render();
+        }
+
+        function createManagerLogin(managerId) {
+            const manager = state.managers.find(m => m.id === managerId);
+            if (!manager) return;
+
+            const username = prompt('Enter username for ' + manager.name + ':', manager.name.toLowerCase().replace(/\s/g, ''));
+            if (!username || !username.trim()) return;
+
+            const cleanUsername = username.trim().toLowerCase();
+
+            if (users[cleanUsername]) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+
+            const password = prompt('Enter password for ' + manager.name + ':', 'password123');
+            if (!password || !password.trim()) return;
+
+            users[cleanUsername] = {
+                password: password.trim(),
+                role: 'manager',
+                managerId: managerId
+            };
+
+            saveUsers();
+            render();
+        }
+
+        function updateManagerCredentials(managerId, oldUsername) {
+            const newUsername = prompt('Enter new username:', oldUsername);
+            if (!newUsername || !newUsername.trim()) return;
+
+            const cleanUsername = newUsername.trim().toLowerCase();
+
+            if (cleanUsername !== oldUsername && users[cleanUsername]) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+
+            const newPassword = prompt('Enter new password:', users[oldUsername].password);
+            if (!newPassword || !newPassword.trim()) return;
+
+            if (cleanUsername !== oldUsername) {
+                delete users[oldUsername];
+            }
+
+            users[cleanUsername] = {
+                password: newPassword.trim(),
+                role: 'manager',
+                managerId: managerId
+            };
+
+            saveUsers();
+            alert('Credentials updated successfully!');
             render();
         }
 
@@ -1058,7 +1268,6 @@ ${quad.name}</title>
         }
 
         function saveNote(repId) {
-            console.log('saveNote called for rep:', repId);
             const content = document.getElementById('noteContent').value;
             if (!content.trim()) {
                 alert('Please enter a note');
@@ -1085,13 +1294,10 @@ ${quad.name}</title>
                 state.selectedRep = state.reps.find(r => r.id === repId);
             }
 
-            console.log('State updated, notes:', state.reps.find(r => r.id === repId).notes);
             state.editingNote = false;
             state.newNote = { content: '' };
             saveData();
-            console.log('About to render');
             render();
-            console.log('Render complete');
         }
 
         function editRepResponse(sessionId) {
@@ -1175,7 +1381,6 @@ ${quad.name}</title>
         }
 
         function toggleActionItem(repId, itemId) {
-            console.log('toggleActionItem called');
             state.reps = state.reps.map(r => {
                 if (r.id === repId) {
                     return {
@@ -1193,9 +1398,7 @@ ${quad.name}</title>
             }
             
             saveData();
-            console.log('About to render after toggle');
             render();
-            console.log('Render complete after toggle');
         }
 
         function deleteSession(repId, sessionId) {
@@ -1288,6 +1491,115 @@ ${quad.name}</title>
             
             saveData();
             render();
+        }
+
+        function deleteRep(repId) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            if (!confirm(`Are you sure you want to delete ${rep.name}? This will permanently delete all their data.`)) return;
+
+            const repUsername = Object.keys(users).find(username => 
+                users[username].role === 'rep' && users[username].repId === repId
+            );
+            if (repUsername) {
+                delete users[repUsername];
+                saveUsers();
+            }
+
+            state.reps = state.reps.filter(r => r.id !== repId);
+            saveData();
+            render();
+        }
+
+        function renameRep(repId) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            const newName = prompt(`Enter new name for ${rep.name}:`, rep.name);
+            if (!newName || !newName.trim() || newName.trim() === rep.name) return;
+
+            state.reps = state.reps.map(r => 
+                r.id === repId ? { ...r, name: newName.trim() } : r
+            );
+            saveData();
+            render();
+        }
+
+        function createLogin(repId) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            const username = prompt('Enter username for ' + rep.name + ':', rep.name.toLowerCase().replace(/\s/g, ''));
+            if (!username || !username.trim()) return;
+
+            const cleanUsername = username.trim().toLowerCase();
+
+            if (users[cleanUsername]) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+
+            const password = prompt('Enter password for ' + rep.name + ':', 'password123');
+            if (!password || !password.trim()) return;
+
+            users[cleanUsername] = {
+                password: password.trim(),
+                role: 'rep',
+                repId: repId
+            };
+
+            saveUsers();
+            render();
+        }
+
+        function updateLogin(repId, oldUsername) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            const newUsername = document.getElementById(`username-${repId}`).value.trim().toLowerCase();
+            const newPassword = document.getElementById(`password-${repId}`).value.trim();
+
+            if (!newUsername || !newPassword) {
+                alert('Username and password cannot be empty');
+                return;
+            }
+
+            if (newUsername !== oldUsername && users[newUsername]) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+
+            if (newUsername !== oldUsername) {
+                delete users[oldUsername];
+            }
+
+            users[newUsername] = {
+                password: newPassword,
+                role: 'rep',
+                repId: repId
+            };
+
+            saveUsers();
+            alert('Credentials updated successfully!');
+            render();
+        }
+
+        function removeLogin(repId) {
+            const rep = state.reps.find(r => r.id === repId);
+            if (!rep) return;
+
+            if (!confirm(`Remove login access for ${rep.name}?`)) return;
+
+            const repUsername = Object.keys(users).find(username => 
+                users[username].role === 'rep' && users[username].repId === repId
+            );
+
+            if (repUsername) {
+                delete users[repUsername];
+                saveUsers();
+                render();
+            }
         }
 
         function highlightAssessment(id) {
