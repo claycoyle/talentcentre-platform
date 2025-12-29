@@ -156,7 +156,7 @@
             
             const groupedData = {};
             data.forEach(point => {
-                const key = point.name || 'unknown';
+                const key = point.name || 'current-rep';
                 if (!groupedData[key]) {
                     groupedData[key] = { manager: [], self: [] };
                 }
@@ -182,7 +182,7 @@
                     const assessmentId = `assess-${point.date}-${point.role}-${name}`.replace(/\s/g, '-');
                     assessmentList.push({
                         id: assessmentId,
-                        name: name,
+                        name: name !== 'current-rep' ? name : null,
                         date: point.date,
                         skill: point.skill,
                         will: point.will,
@@ -213,7 +213,7 @@ ${quad.name}</title>
                     const assessmentId = `assess-${point.date}-${point.role}-${name}`.replace(/\s/g, '-');
                     assessmentList.push({
                         id: assessmentId,
-                        name: name,
+                        name: name !== 'current-rep' ? name : null,
                         date: point.date,
                         skill: point.skill,
                         will: point.will,
@@ -233,7 +233,7 @@ ${quad.name}</title>
                     </circle>`;
                 });
                 
-                if (showNames && name) {
+                if (showNames && name !== 'current-rep') {
                     const latestPoint = [...assessments.self, ...assessments.manager].sort((a, b) => 
                         new Date(b.date) - new Date(a.date)
                     )[0];
@@ -276,13 +276,13 @@ ${quad.name}</title>
                                 border-radius: 50%; opacity: ${assess.opacity};"></div>
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="text-sm font-semibold">${assess.name}</span>
+                            ${assess.name ? `<span class="text-sm font-semibold">${assess.name}</span>` : '<span class="text-sm font-semibold">' + (assess.role === 'self' ? 'Self' : 'Manager') + ' Assessment</span>'}
                             <span class="text-sm text-gray">${assess.date}</span>
                         </div>
                         <div style="display: flex; gap: 1rem; font-size: 0.75rem; color: #6b7280;">
                             <span>Skill: ${assess.skill.toFixed(1)}</span>
                             <span>Will: ${assess.will.toFixed(1)}</span>
-                            <span>${assess.role === 'self' ? 'Self' : 'Manager'}</span>
+                            ${assess.name ? `<span>${assess.role === 'self' ? 'Self' : 'Manager'}</span>` : ''}
                         </div>
                     </div>
                 </div>
@@ -710,7 +710,7 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.26</span>
+                            <span class="text-sm text-gray">v0.27</span>
                         </div>
                         <div class="btn-group">
                             <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
