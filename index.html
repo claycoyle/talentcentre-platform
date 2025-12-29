@@ -109,6 +109,7 @@
             newSession: { date: '', focus: '', outcomes: '', actionItems: '' },
             newNote: { content: '' },
             matrixInput: { role: 'manager', skill1: 3, skill2: 3, skill3: 3, will1: 3, will2: 3, will3: 3 },
+            currentUser: null,
             reps: [
                 { id: 1, name: 'Sarah Johnson', devPlan: 'Focus on consultative selling and objection handling', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
                 { id: 2, name: 'Mike Chen', devPlan: 'Develop closing techniques and pipeline management', sessions: [], matrixHistory: [], notes: [], actionItems: [] },
@@ -117,12 +118,38 @@
             ]
         };
 
+        // User credentials - CHANGE THESE!
+        const users = {
+            'manager': { password: 'manager123', role: 'manager', repId: null },
+            'sarah': { password: 'sarah123', role: 'rep', repId: 1 },
+            'mike': { password: 'mike123', role: 'rep', repId: 2 },
+            'alex': { password: 'alex123', role: 'rep', repId: 3 },
+            'emily': { password: 'emily123', role: 'rep', repId: 4 }
+        };
+
         async function loadData() {
+            // Check for existing session
+            const sessionUser = localStorage.getItem('currentUser');
+            if (sessionUser) {
+                state.currentUser = JSON.parse(sessionUser);
+                
+                // Set appropriate view based on role
+                if (state.currentUser.role === 'rep') {
+                    state.view = 'rep';
+                    state.selectedRep = state.reps.find(r => r.id === state.currentUser.repId);
+                }
+            }
+            
             try {
                 const result = await storage.get('sales-dev-data');
                 if (result?.value) {
                     const data = JSON.parse(result.value);
                     state.reps = data.reps || state.reps;
+                    
+                    // Update selectedRep reference if logged in as rep
+                    if (state.currentUser?.role === 'rep') {
+                        state.selectedRep = state.reps.find(r => r.id === state.currentUser.repId);
+                    }
                 }
             } catch (error) {
                 console.log('Using default data');
@@ -697,6 +724,12 @@ ${quad.name}</title>
             console.log('Rendering...');
             const root = document.getElementById('root');
             
+            // Show login screen if not logged in
+            if (!state.currentUser) {
+                root.innerHTML = renderLogin();
+                return;
+            }
+            
             const repSelectHTML = state.view === 'rep' ? `
                 <select onchange="changeRep(this.value)" style="max-width: 16rem;">
                     ${state.reps.map(rep => `
@@ -709,23 +742,31 @@ ${quad.name}</title>
                 <div class="container">
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
-                            <h1 class="title">Sales Team Development Platform</h1>
-                            <span class="text-sm text-gray">v0.27</span>
+                            <div>
+                                <h1 class="title">Sales Team Development Platform</h1>
+                                <p class="text-sm text-gray">Logged in as: ${state.currentUser.username} (${state.currentUser.role})</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span class="text-sm text-gray">v0.28</span>
+                                <button onclick="logout()" class="btn btn-secondary btn-small">Logout</button>
+                            </div>
                         </div>
-                        <div class="btn-group">
-                            <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
-                                Manager View
-                            </button>
-                            <button onclick="switchView('rep')" class="btn ${state.view === 'rep' ? 'btn-primary' : 'btn-secondary'}">
-                                Rep View
-                            </button>
-                            ${state.view === 'manager' ? `
-                                <button onclick="showManageReps()" class="btn btn-secondary">
-                                    Manage Reps
+                        ${state.currentUser.role === 'manager' ? `
+                            <div class="btn-group">
+                                <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
+                                    Manager View
                                 </button>
-                            ` : ''}
-                        </div>
-                        ${repSelectHTML}
+                                <button onclick="switchView('rep')" class="btn ${state.view === 'rep' ? 'btn-primary' : 'btn-secondary'}">
+                                    Rep View
+                                </button>
+                                ${state.view === 'manager' ? `
+                                    <button onclick="showManageReps()" class="btn btn-secondary">
+                                        Manage Reps
+                                    </button>
+                                ` : ''}
+                            </div>
+                            ${repSelectHTML}
+                        ` : ''}
                     </div>
 
                     ${state.view === 'manager' && !state.selectedRep 
@@ -739,7 +780,81 @@ ${quad.name}</title>
             `;
         }
 
+        function renderLogin() {
+            return `
+                <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f3f4f6;">
+                    <div class="card" style="max-width: 400px; width: 100%;">
+                        <h1 class="title">Sales Team Development Platform</h1>
+                        <p class="text-sm text-gray mb-4">Please log in to continue</p>
+                        
+                        <form onsubmit="handleLogin(event)">
+                            <div class="mb-3">
+                                <label>Username</label>
+                                <input type="text" id="username" required autofocus>
+                            </div>
+                            <div class="mb-4">
+                                <label>Password</label>
+                                <input type="password" id="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                        </form>
+                        
+                        <div class="mt-4 p-3" style="background: #f9fafb; border-radius: 0.375rem; font-size: 0.75rem; color: #6b7280;">
+                            <p class="font-semibold mb-2">Demo Credentials:</p>
+                            <p>Manager: manager / manager123</p>
+                            <p>Rep (Sarah): sarah / sarah123</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.toLowerCase();
+            const password = document.getElementById('password').value;
+            
+            const user = users[username];
+            
+            if (!user || user.password !== password) {
+                alert('Invalid username or password');
+                return;
+            }
+            
+            // Set current user
+            state.currentUser = {
+                username: username,
+                role: user.role,
+                repId: user.repId
+            };
+            
+            // Save session
+            localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+            
+            // Set appropriate view
+            if (user.role === 'rep') {
+                state.view = 'rep';
+                state.selectedRep = state.reps.find(r => r.id === user.repId);
+            } else {
+                state.view = 'manager';
+            }
+            
+            render();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            state.currentUser = null;
+            state.view = 'manager';
+            state.selectedRep = null;
+            state.showingManageReps = false;
+            render();
+        }
+
         function switchView(view) {
+            // Only managers can switch views
+            if (state.currentUser?.role !== 'manager') return;
+            
             state.view = view;
             state.selectedRep = view === 'rep' ? state.reps[0] : null;
             state.showingManageReps = false;
