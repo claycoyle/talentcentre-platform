@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Team Development Platform</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
@@ -87,14 +92,62 @@
     <script>
         console.log('Script starting...');
         
+        // Wait for Firebase to load
+        window.addEventListener('load', function() {
+            console.log('Firebase available:', typeof firebase !== 'undefined');
+            
+            if (typeof firebase === 'undefined') {
+                alert('Firebase failed to load. Please refresh the page.');
+                return;
+            }
+            
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            // Initialize Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyAIU_EJ8nxR498ua3HA3LkOdTacAIM5rwM",
+                authDomain: "talent-centre.firebaseapp.com",
+                projectId: "talent-centre",
+                storageBucket: "talent-centre.firebasestorage.app",
+                messagingSenderId: "839312152200",
+                appId: "1:839312152200:web:a7fc8cb7c4d5e22815713d",
+                measurementId: "G-5F0BLZ524M"
+            };
+            
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+            
+            // Make db available globally
+            window.db = db;
+            
+            console.log('Firebase initialized successfully');
+            loadData();
+        }
+        
+        // Cloud storage wrapper using Firestore
         const storage = {
             async get(key) {
-                const item = localStorage.getItem(key);
-                return item ? { key, value: item } : null;
+                try {
+                    const doc = await window.db.collection('data').doc(key).get();
+                    if (doc.exists) {
+                        return { key, value: doc.data().value };
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error reading from Firestore:', error);
+                    return null;
+                }
             },
             async set(key, value) {
-                localStorage.setItem(key, value);
-                return { key, value };
+                try {
+                    await window.db.collection('data').doc(key).set({ value });
+                    return { key, value };
+                } catch (error) {
+                    console.error('Error writing to Firestore:', error);
+                    return null;
+                }
             }
         };
 
@@ -126,27 +179,27 @@
             'manager': { password: 'manager123', role: 'manager', managerId: 1 }
         };
 
-        function loadUsers() {
+        async function loadUsers() {
             try {
-                const savedUsers = localStorage.getItem('system-users');
-                if (savedUsers) {
-                    users = JSON.parse(savedUsers);
+                const result = await storage.get('system-users');
+                if (result?.value) {
+                    users = JSON.parse(result.value);
                 }
             } catch (error) {
                 console.error('Error loading users:', error);
             }
         }
 
-        function saveUsers() {
+        async function saveUsers() {
             try {
-                localStorage.setItem('system-users', JSON.stringify(users));
+                await storage.set('system-users', JSON.stringify(users));
             } catch (error) {
                 console.error('Error saving users:', error);
             }
         }
 
         async function loadData() {
-            loadUsers();
+            await loadUsers();
             
             const sessionUser = localStorage.getItem('currentUser');
             if (sessionUser) {
@@ -175,9 +228,9 @@
             render();
         }
 
-        function saveData() {
+        async function saveData() {
             try {
-                storage.set('sales-dev-data', JSON.stringify({ reps: state.reps, managers: state.managers }));
+                await storage.set('sales-dev-data', JSON.stringify({ reps: state.reps, managers: state.managers }));
             } catch (error) {
                 console.error('Error saving:', error);
             }
@@ -886,7 +939,7 @@ ${quad.name}</title>
                                 <p class="text-sm text-gray">Logged in as: ${state.currentUser.username} (${state.currentUser.role})</p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem;">
-                                <span class="text-sm text-gray">v0.30</span>
+                                <span class="text-sm text-gray">v0.32 (Firebase)</span>
                                 <button onclick="logout()" class="btn btn-secondary btn-small">Logout</button>
                             </div>
                         </div>
@@ -1621,9 +1674,6 @@ ${quad.name}</title>
                 dot.setAttribute('stroke-width', '2');
             });
         }
-
-        console.log('Calling loadData...');
-        loadData();
     </script>
 </body>
 </html>
