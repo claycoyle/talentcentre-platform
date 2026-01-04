@@ -239,9 +239,9 @@
         }
 
         function getQuadrant(skill, will) {
-            if (skill >= 3.5 && will >= 3.5) return { name: 'Star Performer', color: '#10b981' };
-            if (skill >= 3.5 && will < 3.5) return { name: 'Capable but Unmotivated', color: '#f59e0b' };
-            if (skill < 3.5 && will >= 3.5) return { name: 'Motivated Learner', color: '#3b82f6' };
+            if (skill >= 3 && will >= 3) return { name: 'Star Performer', color: '#10b981' };
+            if (skill >= 3 && will < 3) return { name: 'Capable but Unmotivated', color: '#f59e0b' };
+            if (skill < 3 && will >= 3) return { name: 'Motivated Learner', color: '#3b82f6' };
             return { name: 'Needs Development', color: '#ef4444' };
         }
 
@@ -2012,6 +2012,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
