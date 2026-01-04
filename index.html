@@ -94,17 +94,38 @@
         
         // Wait for Firebase to load
         window.addEventListener('load', function() {
+            console.log('Page loaded, checking Firebase...');
             console.log('Firebase available:', typeof firebase !== 'undefined');
             
             if (typeof firebase === 'undefined') {
-                alert('Firebase failed to load. Please refresh the page.');
+                console.error('Firebase failed to load');
+                document.getElementById('root').innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; padding: 2rem;">
+                        <p style="color: #dc2626; font-weight: bold; margin-bottom: 1rem;">Firebase failed to load</p>
+                        <p style="color: #6b7280;">Please refresh the page. If the problem persists, check your internet connection.</p>
+                        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">Refresh Page</button>
+                    </div>
+                `;
                 return;
             }
             
-            initializeApp();
+            try {
+                initializeApp();
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                document.getElementById('root').innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; padding: 2rem;">
+                        <p style="color: #dc2626; font-weight: bold; margin-bottom: 1rem;">Error initializing app</p>
+                        <p style="color: #6b7280;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">Refresh Page</button>
+                    </div>
+                `;
+            }
         });
         
         function initializeApp() {
+            console.log('Initializing Firebase...');
+            
             // Initialize Firebase
             const firebaseConfig = {
                 apiKey: "AIzaSyAIU_EJ8nxR498ua3HA3LkOdTacAIM5rwM",
@@ -123,6 +144,7 @@
             window.db = db;
             
             console.log('Firebase initialized successfully');
+            console.log('Calling loadData...');
             loadData();
         }
         
@@ -1351,7 +1373,7 @@ ${quad.name}</title>
                                 <p class="text-sm text-gray">Logged in as: ${state.currentUser.username} (${state.currentUser.role})</p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem;">
-                                <span class="text-sm text-gray">v0.36 (Firebase)</span>
+                                <span class="text-sm text-gray">v0.37 (Firebase)</span>
                                 <button onclick="logout()" class="btn btn-secondary btn-small">Logout</button>
                             </div>
                         </div>
