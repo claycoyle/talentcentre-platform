@@ -1224,17 +1224,21 @@ ${quad.name}</title>
                         `}
                     </div>
 
-                    ${state.view === 'manager' && !state.selectedRep 
-                        ? state.showingManageReps
-                            ? renderManageReps()
-                            : state.showingBestPractices
-                                ? renderBestPractices()
-                                : renderTeamOverview()
-                        : state.showingBestPractices
-                            ? renderBestPractices()
-                            : state.selectedRep 
-                                ? renderRepDetail(state.selectedRep)
-                                : ''}
+${state.view === 'manager' && !state.selectedRep 
+    ? state.showingManageReps
+        ? renderManageReps()
+        : state.showingBestPractices
+            ? renderBestPractices()
+            : state.showingRoleDefinitions
+                ? renderRoleDefinitions()
+                : renderTeamOverview()
+    : state.showingBestPractices
+        ? renderBestPractices()
+        : state.showingRoleDefinitions
+            ? renderRoleDefinitions()
+            : state.selectedRep 
+                ? renderRepDetail(state.selectedRep)
+                : ''}
                 </div>
             `;
         }
@@ -1962,5 +1966,6 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
