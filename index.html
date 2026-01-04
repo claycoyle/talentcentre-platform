@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Talent Development Platform</title>
+    <title>Sales Team Development Platform</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -94,38 +94,17 @@
         
         // Wait for Firebase to load
         window.addEventListener('load', function() {
-            console.log('Page loaded, checking Firebase...');
             console.log('Firebase available:', typeof firebase !== 'undefined');
             
             if (typeof firebase === 'undefined') {
-                console.error('Firebase failed to load');
-                document.getElementById('root').innerHTML = `
-                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; padding: 2rem;">
-                        <p style="color: #dc2626; font-weight: bold; margin-bottom: 1rem;">Firebase failed to load</p>
-                        <p style="color: #6b7280;">Please refresh the page. If the problem persists, check your internet connection.</p>
-                        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">Refresh Page</button>
-                    </div>
-                `;
+                alert('Firebase failed to load. Please refresh the page.');
                 return;
             }
             
-            try {
-                initializeApp();
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                document.getElementById('root').innerHTML = `
-                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; padding: 2rem;">
-                        <p style="color: #dc2626; font-weight: bold; margin-bottom: 1rem;">Error initializing app</p>
-                        <p style="color: #6b7280;">${error.message}</p>
-                        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">Refresh Page</button>
-                    </div>
-                `;
-            }
+            initializeApp();
         });
         
         function initializeApp() {
-            console.log('Initializing Firebase...');
-            
             // Initialize Firebase
             const firebaseConfig = {
                 apiKey: "AIzaSyAIU_EJ8nxR498ua3HA3LkOdTacAIM5rwM",
@@ -144,7 +123,6 @@
             window.db = db;
             
             console.log('Firebase initialized successfully');
-            console.log('Calling loadData...');
             loadData();
         }
         
@@ -423,312 +401,7 @@ ${quad.name}</title>
             `;
         }
 
-        function showBestPractices() {
-            state.showingBestPractices = true;
-            state.showingManageReps = false;
-            state.showingRoleDefinitions = false;
-            state.selectedRep = null;
-            render();
-        }
-
-        function showRoleDefinitions() {
-            state.showingRoleDefinitions = true;
-            state.showingBestPractices = false;
-            state.showingManageReps = false;
-            state.selectedRep = null;
-            render();
-        }
-
-        function renderRoleDefinitions() {
-            return `
-                <div class="card">
-                    <h2 class="subtitle">📋 Role Definitions</h2>
-                    <p class="text-sm text-gray mb-4">Clear expectations for skill and will elements in your role</p>
-                    
-                    <div style="background: #059669; color: white; padding: 1rem; border-radius: 0.5rem 0.5rem 0 0; text-align: center; font-weight: 700; font-size: 1.25rem;">
-                        SKILL
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb;">
-                        <div style="background: white; padding: 1.5rem;">
-                            <h3 class="font-bold mb-3" style="text-align: center; font-size: 1.125rem;">Engagement</h3>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Consistently work assigned leads/accounts in line with the defined touch strategy</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Written communication is clear, relevant, and personalized</p>
-                            </div>
-                            <div class="p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Call openings are confident, well-structured, and quickly establish value</p>
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 1.5rem;">
-                            <h3 class="font-bold mb-3" style="text-align: center; font-size: 1.125rem;">Discovery Process</h3>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Effectively use the CARE discovery framework to clarify the customer's initial needs, address their immediate request, and expand the conversation to uncover deeper business challenges</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Apply the CLIMB objection-handling framework to clearly surface, validate, and resolve objections while maintaining momentum in the conversation</p>
-                            </div>
-                            <div class="p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Clearly articulate PayPal's value, consistently tying solutions back to the customer's stated challenges, goals, and broader business context</p>
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 1.5rem;">
-                            <h3 class="font-bold mb-3" style="text-align: center; font-size: 1.125rem;">Pipeline Management</h3>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Drive deals to a clear outcome by aligning on decision criteria, next steps, and timelines, and confidently ask for commitment when appropriate</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Proactively manage all opportunities, keeping deals open only when they are active, relevant, and aligned to clear next steps</p>
-                            </div>
-                            <div class="p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Prioritizes the merchant's long-term success by recommending the right solution and clearly setting expectations for the post-sale journey</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #059669; color: white; padding: 1rem; text-align: center; font-weight: 700; font-size: 1.25rem; margin-top: 2rem;">
-                        WILL
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb;">
-                        <div style="background: white; padding: 1.5rem;">
-                            <h3 class="font-bold mb-3" style="text-align: center; font-size: 1.125rem;">Activity</h3>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Achieve key weekly <strong>activity metrics</strong> standards expected for your role</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Provide timely & constructive communication and feedback to key stakeholders</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Keep <strong>SFDC</strong> accounts, contacts, opportunities, and meeting notes up to date</p>
-                            </div>
-                            <div class="p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Utilise <strong>all productivity tools:</strong> SalesNavigator, Outreach, AI Tools, etc.</p>
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 1.5rem;">
-                            <h3 class="font-bold mb-3" style="text-align: center; font-size: 1.125rem;">Development</h3>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm"><strong>Self identify</strong> areas to improve your personal development and discuss with your manager</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm"><strong>Seek feedback</strong> from your manager and stakeholder(s)</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm"><strong>Receptive to feedback,</strong> be open to change, determine next steps, and apply to your day-to-day</p>
-                            </div>
-                            <div class="p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Come prepared for all <strong>coaching sessions</strong></p>
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 1.5rem;">
-                            <h3 class="font-bold mb-3" style="text-align: center; font-size: 1.125rem;">Attitude</h3>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Maintain a <strong>solution oriented mindset</strong></p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Provide <strong>value and professionalism</strong> in group settings</p>
-                            </div>
-                            <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm"><strong>Respect others,</strong> only speak about others in a way that we would speak to them directly</p>
-                            </div>
-                            <div class="p-3" style="background: #f9fafb; border-radius: 0.375rem;">
-                                <p class="text-sm">Being actively <strong>open-minded</strong> to different methods, techniques, perspectives, and insights</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 p-4" style="background: #fffbeb; border: 2px solid #f59e0b; border-radius: 0.5rem;">
-                        <p class="font-semibold mb-2">💡 Using Role Definitions</p>
-                        <p class="text-sm text-gray mb-2">These definitions map directly to the Skill/Will assessment elements in this platform:</p>
-                        <ul style="list-style: disc; margin-left: 1.5rem;" class="text-sm text-gray">
-                            <li><strong>Skill:</strong> Engagement, Discovery Process, Pipeline Management</li>
-                            <li><strong>Will:</strong> Activity, Development, Attitude</li>
-                        </ul>
-                        <p class="text-sm text-gray mt-2">Use these criteria when conducting monthly assessments to ensure consistency and fairness across your team.</p>
-                    </div>
-                </div>
-            `;
-        }
-
         function renderBestPractices() {
-            return `
-                <div class="card">
-                    <h2 class="subtitle">📚 Best Practices Guide</h2>
-                    
-                    <div class="mb-4 p-4" style="background: #dbeafe; border-radius: 0.5rem;">
-                        <h3 class="font-semibold mb-3" style="font-size: 1.125rem;">The GROW Coaching Model</h3>
-                        
-                        <p class="text-sm mb-3">GROW is a simple framework for structuring coaching conversations. Use it during 1-1s and coaching sessions.</p>
-                        
-                        <div class="mb-3">
-                            <h4 class="font-semibold text-sm mb-1">G - GOAL</h4>
-                            <p class="text-sm text-gray mb-1">What do you want to achieve? What does success look like?</p>
-                            <p class="text-sm text-gray" style="font-style: italic;">Questions: "What would you like to focus on today?" "What outcome are you hoping for?" "How will you know you've succeeded?"</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h4 class="font-semibold text-sm mb-1">R - REALITY</h4>
-                            <p class="text-sm text-gray mb-1">Where are you now? What's the current situation?</p>
-                            <p class="text-sm text-gray" style="font-style: italic;">Questions: "What's happening now?" "What have you tried so far?" "What's working? What isn't?"</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h4 class="font-semibold text-sm mb-1">O - OPTIONS</h4>
-                            <p class="text-sm text-gray mb-1">What could you do? What are the possibilities?</p>
-                            <p class="text-sm text-gray" style="font-style: italic;">Questions: "What options do you have?" "What else could you try?" "If you had no constraints, what would you do?"</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h4 class="font-semibold text-sm mb-1">W - WAY FORWARD</h4>
-                            <p class="text-sm text-gray mb-1">What will you do? What's your commitment?</p>
-                            <p class="text-sm text-gray" style="font-style: italic;">Questions: "Which option will you choose?" "When will you start?" "What might get in the way?"</p>
-                        </div>
-                        
-                        <div class="p-3" style="background: white; border-radius: 0.375rem;">
-                            <p class="text-sm font-semibold mb-1">💡 Tip: The Way Forward becomes your Action Items</p>
-                            <p class="text-sm text-gray">Document commitments from the coaching session as action items with clear due dates.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4 p-4" style="background: #f0fdf4; border-radius: 0.5rem;">
-                        <h3 class="font-semibold mb-3" style="font-size: 1.125rem;">📊 How to Score Yourself on the Skill-Will Matrix</h3>
-                        
-                        <div class="mb-4">
-                            <h4 class="font-semibold mb-2" style="color: #059669;">SKILL Scoring</h4>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #ef4444; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>1 =</strong> Needs further development across most or all elements of the skill</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #f59e0b; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>2 =</strong> Strong in some elements of the skill, clear gaps that need further development</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #3b82f6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>3 =</strong> Strong in all key elements of the skill</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #8b5cf6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>4 =</strong> Displays a level that we should replicate across their team</p>
-                            </div>
-                            <div class="p-2" style="background: white; border-left: 4px solid #10b981; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>5 =</strong> Displays a level that we should replicate across our global organisation</p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold mb-2" style="color: #059669;">WILL Scoring</h4>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #ef4444; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>1 =</strong> Continued behaviour could influence the team negatively</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #f59e0b; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>2 =</strong> Not meeting expectations based on current tenure</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #3b82f6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>3 =</strong> Meeting expectations based on current tenure</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #8b5cf6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>4 =</strong> Exceeding expectations based on current tenure</p>
-                            </div>
-                            <div class="p-2" style="background: white; border-left: 4px solid #10b981; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>5 =</strong> Sets an example that others should follow</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4 p-4" style="background: #f0fdf4; border-radius: 0.5rem;">
-                        <h3 class="font-semibold mb-3" style="font-size: 1.125rem;">📊 How to Score Yourself on the Skill-Will Matrix</h3>
-                        
-                        <div class="mb-4">
-                            <h4 class="font-semibold mb-2" style="color: #059669;">SKILL Scoring</h4>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #ef4444; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>1 =</strong> Needs further development across most or all elements of the skill</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #f59e0b; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>2 =</strong> Strong in some elements of the skill, clear gaps that need further development</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #3b82f6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>3 =</strong> Strong in all key elements of the skill</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #8b5cf6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>4 =</strong> Displays a level that we should replicate across their team</p>
-                            </div>
-                            <div class="p-2" style="background: white; border-left: 4px solid #10b981; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>5 =</strong> Displays a level that we should replicate across our global organisation</p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold mb-2" style="color: #059669;">WILL Scoring</h4>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #ef4444; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>1 =</strong> Continued behaviour could influence the team negatively</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #f59e0b; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>2 =</strong> Not meeting expectations based on current tenure</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #3b82f6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>3 =</strong> Meeting expectations based on current tenure</p>
-                            </div>
-                            <div class="mb-2 p-2" style="background: white; border-left: 4px solid #8b5cf6; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>4 =</strong> Exceeding expectations based on current tenure</p>
-                            </div>
-                            <div class="p-2" style="background: white; border-left: 4px solid #10b981; border-radius: 0.25rem;">
-                                <p class="text-sm"><strong>5 =</strong> Sets an example that others should follow</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <h3 class="font-semibold mb-3" style="font-size: 1.125rem;">✨ Best Practice Tips</h3>
-                        
-                        <div class="grid gap-3">
-                            <div class="p-3" style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Quality Over Quantity</p>
-                                <p class="text-sm text-gray">Not every interaction needs logging. Focus on meaningful coaching moments that drive development. One thoughtful coaching session per week is better than five rushed entries.</p>
-                            </div>
-                            
-                            <div class="p-3" style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Do It Together</p>
-                                <p class="text-sm text-gray">End each 1-1 by adding the coaching session together. This takes 2-3 minutes and ensures alignment on what was discussed and agreed.</p>
-                            </div>
-                            
-                            <div class="p-3" style="background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Use the Matrix as a Conversation Starter</p>
-                                <p class="text-sm text-gray">The skill/will matrix shows progress visually. When dots move, celebrate! When they stagnate, explore why. Gaps between manager and self-assessment reveal important perspectives to discuss.</p>
-                            </div>
-                            
-                            <div class="p-3" style="background: #fce7f3; border-left: 4px solid #ec4899; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Make Action Items SMART</p>
-                                <p class="text-sm text-gray">Specific, Measurable, Achievable, Relevant, Time-bound. "Practice objection handling" is vague. "Role-play 3 pricing objections with Mike by Friday" is actionable.</p>
-                            </div>
-                            
-                            <div class="p-3" style="background: #f3f4f6; border-left: 4px solid #6b7280; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Review Before Creating</p>
-                                <p class="text-sm text-gray">Before adding a new coaching session, quickly review the last session's action items. This creates accountability and shows you're tracking progress.</p>
-                            </div>
-                            
-                            <div class="p-3" style="background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Development Plans Should Evolve</p>
-                                <p class="text-sm text-gray">Update development plans quarterly or when priorities shift. They should reflect current focus areas, not be set-and-forget documents.</p>
-                            </div>
-                            
-                            <div class="p-3" style="background: #ecfdf5; border-left: 4px solid #059669; border-radius: 0.375rem;">
-                                <p class="font-semibold text-sm mb-1">Encourage Rep Ownership</p>
-                                <p class="text-sm text-gray">Reps should add notes, complete self-assessments, and respond to coaching sessions. This is their development journey - they should be active participants, not passive recipients.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #fffbeb; border: 2px solid #f59e0b; border-radius: 0.5rem; padding: 1rem;">
-                        <p class="font-semibold mb-2">💡 Remember</p>
-                        <p class="text-sm text-gray">This tool supports your coaching conversations - it doesn't replace them. The real development happens in the field, on calls, and through practice. Use this platform to document progress, maintain accountability, and celebrate growth.</p>
-                    </div>
-                </div>
-            `;
-        }
             return `
                 <div class="card">
                     <h2 class="subtitle">📚 Best Practices Guide</h2>
@@ -1364,7 +1037,7 @@ ${quad.name}</title>
             return `
                 <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f3f4f6;">
                     <div class="card" style="max-width: 400px; width: 100%;">
-                        <h1 class="title">Sales Talent Development Platform</h1>
+                        <h1 class="title">Sales Team Development Platform</h1>
                         <p class="text-sm text-gray mb-4">Please log in to continue</p>
                         
                         <form onsubmit="handleLogin(event)">
@@ -1411,11 +1084,11 @@ ${quad.name}</title>
                     <div class="card">
                         <div class="flex flex-between" style="align-items: baseline;">
                             <div>
-                                <h1 class="title">Sales Talent Development Platform</h1>
+                                <h1 class="title">Sales Team Development Platform</h1>
                                 <p class="text-sm text-gray">Logged in as: ${state.currentUser.username} (${state.currentUser.role})</p>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem;">
-                                <span class="text-sm text-gray">v0.37 (Firebase)</span>
+                                <span class="text-sm text-gray">v0.33 (Firebase)</span>
                                 <button onclick="logout()" class="btn btn-secondary btn-small">Logout</button>
                             </div>
                         </div>
@@ -1432,9 +1105,6 @@ ${quad.name}</title>
                                         Manage Team
                                     </button>
                                 ` : ''}
-                                <button onclick="showRoleDefinitions()" class="btn btn-secondary">
-                                    Role Definitions
-                                </button>
                                 <button onclick="showBestPractices()" class="btn btn-secondary">
                                     Best Practices
                                 </button>
@@ -1442,9 +1112,6 @@ ${quad.name}</title>
                             ${repSelectHTML}
                         ` : `
                             <div class="btn-group">
-                                <button onclick="showRoleDefinitions()" class="btn btn-secondary">
-                                    Role Definitions
-                                </button>
                                 <button onclick="showBestPractices()" class="btn btn-secondary">
                                     Best Practices
                                 </button>
@@ -1457,16 +1124,12 @@ ${quad.name}</title>
                             ? renderManageReps()
                             : state.showingBestPractices
                                 ? renderBestPractices()
-                                : state.showingRoleDefinitions
-                                    ? renderRoleDefinitions()
-                                    : renderTeamOverview()
+                                : renderTeamOverview()
                         : state.showingBestPractices
                             ? renderBestPractices()
-                            : state.showingRoleDefinitions
-                                ? renderRoleDefinitions()
-                                : state.selectedRep 
-                                    ? renderRepDetail(state.selectedRep)
-                                    : ''}
+                            : state.selectedRep 
+                                ? renderRepDetail(state.selectedRep)
+                                : ''}
                 </div>
             `;
         }
@@ -1478,7 +1141,6 @@ ${quad.name}</title>
             state.selectedRep = view === 'rep' ? state.reps[0] : null;
             state.showingManageReps = false;
             state.showingBestPractices = false;
-            state.showingRoleDefinitions = false;
             state.editingPlan = false;
             state.editingSession = false;
             state.editingMatrix = false;
