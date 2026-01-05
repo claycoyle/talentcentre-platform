@@ -1596,10 +1596,8 @@ ${quad.name}</title>
         function toggleEditMatrix() {
             state.editingMatrix = !state.editingMatrix;
             if (!state.editingMatrix) {
-                state.matrixInput = { role: state.view === 'rep' ? 'self' : 'manager', skill1: 3, skill2: 3, skill3: 3, will1: 3, will2: 3, will3: 3 };
-            } else {
-                state.matrixInput.role = state.view === 'rep' ? 'self' : 'manager';
-            }
+                state.matrixInput = { role: state.currentUser.role === 'manager' ? 'manager' : 'self', skill1: 3, skill2: 3, skill3: 3, will1: 3, will2: 3, will3: 3 };            } else {
+                state.matrixInput.role = state.currentUser.role === 'manager' ? 'manager' : 'self';            }
             render();
         }
 
@@ -2011,6 +2009,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
