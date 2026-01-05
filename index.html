@@ -1564,7 +1564,7 @@ ${quad.name}</title>
                             outcomes, 
                             actionItems, 
                             repResponses: [],
-                            createdBy: state.view === 'manager' ? 'Manager' : 'Rep'
+                            createdBy: state.currentUser.role === 'manager' ? 'Manager' : 'Rep'
                         }]
                     };
                 }
@@ -1997,6 +1997,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
