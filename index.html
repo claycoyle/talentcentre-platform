@@ -1129,9 +1129,8 @@ ${quad.name}</title>
                             <div class="mb-4">
                                 <label>Assessment Type</label>
                                 <select id="matrixRole">
-                                    <option value="${state.view === 'rep' ? 'self' : 'manager'}" selected>
-                                        ${state.view === 'rep' ? 'Self Assessment' : 'Manager Assessment'}
-                                    </option>
+                                  <option value="manager" ${state.view === 'manager' ? 'selected' : ''}>Manager Assessment</option>
+                                  <option value="self" ${state.view === 'rep' ? 'selected' : ''}>Self Assessment</option>
                                 </select>
                             </div>
 
@@ -2012,6 +2011,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
