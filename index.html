@@ -1554,22 +1554,32 @@ ${state.currentUser.role === 'manager' ? `
             }
 
             state.reps = state.reps.map(r => {
-                if (r.id === repId) {
-                    return {
-                        ...r,
-                        sessions: [...r.sessions, { 
-                            id: Date.now(), 
-                            date, 
-                            focus, 
-                            outcomes, 
-                            actionItems, 
-                            repResponses: [],
-                            createdBy: state.currentUser.role === 'manager' ? 'Manager' : 'Rep'
-                        }]
-                    };
-                }
-                return r;
-            });
+  if (r.id === repId) {
+    // Parse action items - split by newlines or semicolons
+    const newActionItems = actionItems ? actionItems.split(/\n|;/).filter(item => item.trim()).map(item => ({
+      id: Date.now() + Math.random(), // Ensure unique IDs
+      text: item.trim(),
+      dueDate: null,
+      completed: false
+    })) : [];
+    
+    return {
+      ...r,
+      sessions: [...r.sessions, {
+        id: Date.now(),
+        date,
+        focus,
+        outcomes,
+        actionItems,
+        repResponses: [],
+        createdBy: state.currentUser.role === 'manager' ? 'Manager' : 'Rep'
+      }],
+      actionItems: [...(r.actionItems || []), ...newActionItems]
+    };
+  }
+  return r;
+});
+
 
             if (state.selectedRep && state.selectedRep.id === repId) {
                 state.selectedRep = state.reps.find(r => r.id === repId);
@@ -1997,6 +2007,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
