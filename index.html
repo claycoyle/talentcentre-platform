@@ -980,9 +980,7 @@ ${quad.name}</title>
                     <div class="flex flex-between mb-4">
                         <h3 class=\"subtitle\" style=\"margin: 0;\">Development Focus Area</h3>
                         ${state.view === 'manager' ? `
-                            <button onclick="toggleEditPlan()" class="btn btn-secondary">
-                                ${state.editingPlan ? 'Cancel' : 'Edit'}
-                            </button>
+                            <button onclick=\"toggleEditPlan()\" class=\"btn btn-secondary\">${state.editingPlan ? 'Cancel' : 'Edit'}</button>
                         ` : ''}
                     </div>
                     ${state.editingPlan && state.view === 'manager' ? `
@@ -2012,6 +2010,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
