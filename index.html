@@ -1041,13 +1041,13 @@ ${quad.name}</title>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="flex flex-between mb-4">
-                        <h3 class="subtitle" style="margin: 0;">Action Items (${rep.actionItems ? rep.actionItems.filter(i => !i.completed).length : 0} active)</h3>
-                        ${state.view === 'manager' ? `
-                            <button onclick="addActionItem(${rep.id})" class="btn btn-primary btn-small">+ Add Item</button>
-                        ` : ''}
-                    </div>
+                <div class=\"card\">
+<div class=\"flex flex-between mb-4\">
+<h3 class=\"subtitle\" style=\"margin: 0;\">Action Items (${rep.actionItems ? rep.actionItems.filter(i => !i.completed).length : 0} active)</h3>
+${state.currentUser.role === 'manager' ? `
+<button onclick=\"addActionItem(${rep.id})\" class=\"btn btn-primary btn-small\">+ Add Item</button>
+` : ''}
+</div>
                     <div class="scrollable-section">
                         ${actionItemsHTML}
                     </div>
@@ -1997,6 +1997,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
