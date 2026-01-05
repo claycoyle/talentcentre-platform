@@ -1254,13 +1254,11 @@ ${state.currentUser.role === 'manager' ? `
                         </div>
                             ${repSelectHTML}
                         ` : `
-                            <div class="btn-group">
-                                <button onclick="showRoleDefinitions()" class="btn btn-secondary">
-                                    Role Definitions
-                                </button>
-                                <button onclick="showBestPractices()" class="btn btn-secondary">
-                                    Best Practices
-                                </button>
+                            <div class=\"btn-group\">
+              <button onclick=\"goBack()\" class=\"btn btn-primary\">My Development</button>
+              <button onclick=\"showRoleDefinitions()\" class=\"btn btn-secondary\">Role Definitions</button>
+              <button onclick=\"showBestPractices()\" class=\"btn btn-secondary\">Best Practices</button>
+            </div>
                             </div>
                         `}
                     </div>
@@ -2007,6 +2005,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
