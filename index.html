@@ -893,8 +893,8 @@ ${quad.name}</title>
                                 <p class="font-semibold">${session.focus}</p>
                                 <p class="text-sm text-gray">${session.date} ${session.createdBy ? `• Created by ${session.createdBy}` : ''}</p>
                             </div>
-                            ${(state.view === 'manager' || (state.view === 'rep' && session.createdBy === 'Rep')) ? `
-                                <button onclick="deleteSession(${rep.id}, ${session.id})" class="btn btn-danger btn-small">Delete</button>
+                            ${state.currentUser.role === 'manager' ? `
+                            <button onclick=\"addActionItem(${rep.id})\" class=\"btn btn-primary btn-small\">+ Add Item</button>
                             ` : ''}
                         </div>
                         ${session.outcomes ? `
@@ -1997,6 +1997,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
