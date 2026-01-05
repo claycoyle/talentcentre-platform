@@ -1510,9 +1510,16 @@ ${state.currentUser.role === 'manager' ? `
         }
 
         function goBack() {
-            state.selectedRep = null;
-            render();
-        }
+  if (state.currentUser.role === 'rep') {
+    state.showingBestPractices = false;
+    state.showingRoleDefinitions = false;
+    state.showingManageReps = false;
+    state.selectedRep = state.reps.find(r => r.id === state.currentUser.repId);
+  } else {
+    state.selectedRep = null;
+  }
+  render();
+}
 
         function toggleEditPlan() {
             state.editingPlan = !state.editingPlan;
@@ -2005,6 +2012,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
