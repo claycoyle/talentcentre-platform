@@ -1245,24 +1245,12 @@ ${quad.name}</title>
                             </div>
                         </div>
                         ${state.currentUser.role === 'manager' ? `
-                            <div class="btn-group">
-                                <button onclick="switchView('manager')" class="btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}">
-                                    Manager View
-                                </button>
-                                <button onclick="switchView('rep')" class="btn ${state.view === 'rep' ? 'btn-primary' : 'btn-secondary'}">
-                                    Rep View
-                                </button>
-                                ${state.view === 'manager' ? `
-                                    <button onclick="showManageReps()" class="btn btn-secondary">
-                                        Manage Team
-                                    </button>
-                                ` : ''}
-                                <button onclick="showRoleDefinitions()" class="btn btn-secondary">
-                                    Role Definitions
-                                </button>
-                                <button onclick="showBestPractices()" class="btn btn-secondary">
-                                    Best Practices
-                                </button>
+                           <div class=\"btn-group\">
+                                <button onclick=\"switchView('manager')\" class=\"btn ${state.view === 'manager' ? 'btn-primary' : 'btn-secondary'}\">Manager View</button>
+                                <button onclick=\"switchView('rep')\" class=\"btn ${state.view === 'rep' ? 'btn-primary' : 'btn-secondary'}\">Rep View</button>
+                                <button onclick=\"showManageReps()\" class=\"btn btn-secondary\">Manage Team</button>
+                                <button onclick=\"showRoleDefinitions()\" class=\"btn btn-secondary\">Role Definitions</button>
+                                <button onclick=\"showBestPractices()\" class=\"btn btn-secondary\">Best Practices</button>
                             </div>
                             ${repSelectHTML}
                         ` : `
@@ -2009,6 +1997,7 @@ ${quad.name}</title>
     </script>
 </body>
 </html>
+
 
 
 
