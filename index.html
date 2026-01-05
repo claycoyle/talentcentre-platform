@@ -983,10 +983,10 @@ ${quad.name}</title>
                             <button onclick=\"toggleEditPlan()\" class=\"btn btn-secondary\">${state.editingPlan ? 'Cancel' : 'Edit'}</button>
                         ` : ''}
                     </div>
-                    ${state.editingPlan && state.view === 'manager' ? `
-                        <textarea id="planEdit" rows="4" class="mb-3">${rep.devPlan}</textarea>
-                        <button onclick="savePlan(${rep.id})" class="btn btn-primary">Save Plan</button>
-                    ` : `<p>${rep.devPlan}</p>`}
+                    ${state.editingPlan ? `
+<textarea id=\"planEdit\" rows=\"4\" class=\"mb-3\">${rep.devPlan}</textarea>
+<button onclick=\"savePlan(${rep.id})\" class=\"btn btn-primary\">Save Plan</button>
+` : `<p>${rep.devPlan}</p>`}
                 </div>
 
                 ${latestMatrix ? `
@@ -2010,6 +2010,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
