@@ -175,6 +175,10 @@
             managers: [
                 { id: 1, name: 'Main Manager' }
             ]
+            function filterByManager(managerId) {
+  state.selectedManagerFilter = managerId ? parseInt(managerId) : null;
+  render();
+}
         };
 
         let users = {
@@ -817,9 +821,12 @@ ${quad.name}</title>
 
         function renderTeamOverview() {
             const currentManagerId = state.currentUser?.managerId;
-            const filteredReps = currentManagerId 
-                ? state.reps.filter(r => r.managerId === currentManagerId)
-                : state.reps;
+            let filteredReps = currentManagerId ? state.reps.filter(r => r.managerId === currentManagerId) : state.reps;
+
+            // Apply manager filter if one is selected
+            if (state.selectedManagerFilter) {
+            filteredReps = filteredReps.filter(r => r.managerId === state.selectedManagerFilter);
+            }
 
             const repsHTML = filteredReps.map(rep => {
                 const latest = rep.matrixHistory[rep.matrixHistory.length - 1];
@@ -872,9 +879,20 @@ ${quad.name}</title>
                         <p class="text-sm text-gray mt-2">Last 5 assessments shown for each type. Older assessments fade out.</p>
                     </div>
                 </div>
-                <div class="card">
-                    <h3 class="subtitle">Team Overview (${filteredReps.length} reps)</h3>
-                    <div class="grid grid-2">
+               <div class=\"card\">
+            <div class=\"flex flex-between mb-4\">
+            <h3 class=\"subtitle\" style=\"margin: 0;\">Team Overview (${filteredReps.length} reps)</h3>
+            <div>
+            <label style=\"display: inline; margin-right: 0.5rem;\">Filter by Manager:</label>
+            <select onchange=\"filterByManager(this.value)\" style=\"width: auto; display: inline-block;\">
+            <option value=\"\">All Managers</option>
+            ${state.managers.map(m => `
+            <option value=\"${m.id}\" ${state.selectedManagerFilter === m.id ? 'selected' : ''}>${m.name}</option>
+            `).join('')}
+            </select>
+            </div>
+            </div>
+            <div class=\"grid grid-2\">
                         ${repsHTML.length > 0 ? repsHTML : '<p class="empty-state">No reps assigned to your team yet</p>'}
                     </div>
                 </div>
@@ -2008,6 +2026,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
