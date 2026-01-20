@@ -154,6 +154,8 @@
         let state = {
             view: 'manager',
             selectedRep: null,
+            selectedManagerFilter: null,
+            roleDefinitionsView: 'inbound',
             showingManageReps: false,
             showingBestPractices: false,
             showingRoleDefinitions: false,
@@ -181,6 +183,12 @@
               state.selectedManagerFilter = managerId ? parseInt(managerId) : null;
               render();
             }
+        }
+    function switchRoleDefinitionsView(view) {
+        state.roleDefinitionsView = view;
+        render();
+    }
+    let users = {
         let users = {
             'manager': { password: 'manager123', role: 'manager', managerId: 1 }
         };
@@ -2033,6 +2041,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
