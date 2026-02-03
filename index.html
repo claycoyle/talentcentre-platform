@@ -274,6 +274,12 @@
             } catch (error) {
                 console.log('Using default data');
             }
+            // Update last access time (after all data is loaded)
+                if (state.currentUser && users[state.currentUser.username]) {
+                      users[state.currentUser.username].lastLogin = new Date().toISOString();
+                      saveUsers();
+                }
+
             render();
         }
 
@@ -2141,6 +2147,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
