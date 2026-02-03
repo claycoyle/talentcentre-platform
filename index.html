@@ -258,12 +258,7 @@
                     state.selectedRep = state.reps.find(r => r.id === state.currentUser.repId);
                 }
             }
-            // Update last access time
-            if (state.currentUser && users[state.currentUser.username]) {
-                users[state.currentUser.username].lastLogin = new Date().toISOString();
-                saveUsers();
-                }
-            }
+           
             
             try {
                 const result = await storage.get('sales-dev-data');
@@ -2146,6 +2141,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
