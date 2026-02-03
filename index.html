@@ -80,6 +80,42 @@
         .assessment-row { padding: 0.5rem; border-radius: 0.25rem; transition: background-color 0.2s; cursor: pointer; }
         .assessment-row:hover { background-color: #f3f4f6; }
         .assessment-row.highlighted { background-color: #dbeafe; }
+
+        /* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .container { padding: 1rem; }
+  
+  .card { padding: 1rem; margin-bottom: 1rem; }
+  
+  .title { font-size: 1.5rem; }
+  .subtitle { font-size: 1.125rem; }
+  
+  /* Stack buttons vertically on mobile */
+  .btn-group { flex-direction: column; }
+  .btn { width: 100%; }
+  
+  /* Make grids single column on mobile */
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-cols-2 { grid-template-columns: 1fr; }
+  
+  /* Role definitions - stack vertically */
+  div[style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Matrix SVG */
+  .scrollable-section { max-height: 300px; }
+  
+  /* Hide matrix labels on very small screens */
+  @media (max-width: 480px) {
+    svg text { font-size: 8px; }
+  }
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+}
     </style>
 </head>
 <body>
@@ -2096,6 +2132,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
