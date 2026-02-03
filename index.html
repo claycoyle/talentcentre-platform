@@ -116,6 +116,18 @@
 @media (max-width: 1024px) and (min-width: 769px) {
   .grid-2 { grid-template-columns: repeat(2, 1fr); }
 }
+
+        .matrix-container {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .matrix-container {
+    grid-template-columns: 1fr;
+  }
+}
     </style>
 </head>
 <body>
@@ -442,7 +454,7 @@ ${quad.name}</title>
             `).join('') : '<p class="empty-state">No assessments</p>';
 
             return `
-                <div style="display: grid; grid-template-columns: 1fr 300px; gap: 1rem;">
+                    <div class="matrix-container">
                     <div>${svgContent}</div>
                     <div>
                         <h4 class="font-semibold mb-2">Assessment History</h4>
@@ -2147,6 +2159,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
