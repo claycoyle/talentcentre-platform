@@ -836,6 +836,7 @@ ${state.roleDefinitionsView === 'inbound' ? `
                             <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.375rem; padding: 0.75rem;">
                                 <p class="text-sm"><strong>Username:</strong> ${managerUsername}</p>
                                 <p class="text-sm"><strong>Password:</strong> ${users[managerUsername].password}</p>
+                                <p class="text-sm"><strong>Last Login:</strong> ${users[managerUsername].lastLogin ? new Date(users[managerUsername].lastLogin).toLocaleString() : 'Never'}</p>
                                 <button onclick="updateManagerCredentials(${manager.id}, '${managerUsername}')" class="btn btn-secondary btn-small mt-2">Edit Credentials</button>
                             </div>
                         ` : `
@@ -893,6 +894,9 @@ ${state.roleDefinitionsView === 'inbound' ? `
                                 <div class="mb-2">
                                     <label class="text-sm">Password</label>
                                     <input type="text" id="password-${rep.id}" value="${users[repUsername].password}" class="text-sm" style="padding: 0.375rem;">
+                                </div>
+                                <div class="mb-2">
+                                <p class="text-sm"><strong>Last Login:</strong> ${users[repUsername].lastLogin ? new Date(users[repUsername].lastLogin).toLocaleString() : 'Never'}</p>
                                 </div>
                                 <button onclick="updateLogin(${rep.id}, '${repUsername}')" class="btn btn-primary btn-small">Update</button>
                             ` : `
@@ -1452,6 +1456,10 @@ ${state.currentUser.role === 'manager' ? `
             };
             
             localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+            
+            // Track last login
+            users[username].lastLogin = new Date().toISOString();
+            saveUsers();
             
             if (user.role === 'rep') {
                 state.view = 'rep';
@@ -2132,6 +2140,7 @@ ${state.currentUser.role === 'manager' ? `
     </script>
 </body>
 </html>
+
 
 
 
